@@ -1,0 +1,41 @@
+{
+  "name": "AutoProp",
+  "version": "0.1.0",
+  "description": "Built for BD, Proposal, Capture and Contract",
+  "permissions": "background",
+  "host_permissions": [
+    "httlps://*youtube.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.youtube.com/*"
+      ],
+      "js": [
+        "contentScript.js"
+      ]
+    }
+  ],
+  "web_accesible_resources": [
+    {
+      "resources": [
+        "assets/bookmark.png",
+        "assets/..."
+      ],
+      "matches": [
+        "https://*.youtube.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "defualt_icon": {
+      "16": "assets..."
+    },
+    "default_title": "Auto Prop",
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 3
+}
