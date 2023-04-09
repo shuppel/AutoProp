@@ -3,13 +3,16 @@ from tkinter import filedialog
 from docx import Document
 from openai_api_service import analyze_text
 import pdfplumber
-from tiktoken import Iokenizer
+import spacy
+
+
+nlp = spacy.load("en_core_web_sm")
 
 def truncate_text(text, max_tokens):
-    tokenizer = Tokenizer()
-    tokens = list(tokenizer.tokenize(text))
-    truncated_tokens = tokens[:max_tokens]
-    return "".join(token.string for token in truncated_tokens), len(tokens)
+    doc = nlp(text)
+    truncated_tokens = doc[:max_tokens]
+    return "".join(token.text_with_ws for token in truncated_tokens), len(doc)
+
 
 def extract_text_from_docx(docx_path):
     doc = Document(docx_path)
@@ -30,6 +33,7 @@ def extract_text_from_pdf(pdf_path):
 
 
 def main():
+    max_allowed_tokens = 3000
     root = tk.Tk()
     root.withdraw()
 
@@ -42,16 +46,20 @@ def main():
             text = extract_text_from_pdf(file_path)
         else:
             print("Unsupported file type.")
-            return
+            return None
 
-        max_allowed_tokens = 4097 - 100  # 100 tokens reserved for the completion
+        print("Original text:")
+        print(text)
         truncated_text, original_token_count = truncate_text(text, max_allowed_tokens)
-        summary = analyze_text(truncated_text)
         print(f"Original token count: {original_token_count}")
+        print(f"Truncated token count: {len(truncated_text.split())}")
+        summary = analyze_text(truncated_text)
         print("Summary:")
         print(summary)
     else:
         print("No file selected.")
+        return None
+
 
 
 if __name__ == "__main__":
