@@ -3,8 +3,6 @@ import re
 
 openai.api_key = "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"
 
-
-
 def ask_question(question, context):
     model = "text-davinci-002"
     prompt = f"{question}\n\n{context}"
