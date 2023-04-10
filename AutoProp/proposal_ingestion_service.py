@@ -42,30 +42,46 @@ def main():
     root = tk.Tk()
     root.withdraw()
 
-    file_path = filedialog.askopenfilename(filetypes=[("Document files", "*.docx *.pdf")])
+    while True:
+        file_path = filedialog.askopenfilename(filetypes=[("Document files", "*.docx *.pdf")])
 
-    if file_path:
-        if file_path.lower().endswith(".docx"):
-            text = extract_text_from_docx(file_path)
-        elif file_path.lower().endswith(".pdf"):
-            text = extract_text_from_pdf(file_path)
+        if file_path:
+            if file_path.lower().endswith(".docx"):
+                text = extract_text_from_docx(file_path)
+            elif file_path.lower().endswith(".pdf"):
+                text = extract_text_from_pdf(file_path)
+            else:
+                print("Unsupported file type.")
+                return None
+
+            print("Original text:")
+            print(text)
+            truncated_text, original_token_count = truncate_text(text, max_allowed_tokens)
+            print(f"Original token count: {original_token_count}")
+            print(f"Truncated token count: {len(truncated_text.split())}")
+
+            while True:
+                question = input("Please enter your question (or type HELP for more options): ")
+
+                if question.lower() == "help":
+                    print("Options:")
+                    print("1. Change document")
+                    print("2. Exit")
+                    user_choice = input("Please enter your choice: ")
+
+                    if user_choice == "1":
+                        break
+                    elif user_choice == "2":
+                        return None
+                    else:
+                        print("Invalid choice. Please try again.")
+                else:
+                    answer = ask_question(question, truncated_text)
+                    print("Answer:")
+                    print(answer)
         else:
-            print("Unsupported file type.")
+            print("No file selected.")
             return None
-
-        print("Original text:")
-        print(text)
-        truncated_text, original_token_count = truncate_text(text, max_allowed_tokens)
-        print(f"Original token count: {original_token_count}")
-        print(f"Truncated token count: {len(truncated_text.split())}")
-
-        get_user_question_and_answer(truncated_text)
-
-        export_data_to_database()
-
-    else:
-        print("No file selected.")
-        return None
 
 if __name__ == "__main__":
     main()
